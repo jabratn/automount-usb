@@ -7,10 +7,10 @@
 # by Mike Blackwell, modified to our needs. Credits to the author.
 
 # This script is called from systemd unit file to mount or unmount
-# a USB drive.
+# a DCR drive.
 
 PATH="$PATH:/usr/bin:/usr/local/bin:/usr/sbin:/usr/local/sbin:/bin:/sbin"
-log="logger -t usb-mount.sh -s "
+log="logger -t dcr-mount.sh -s "
 
 usage()
 {
@@ -43,11 +43,52 @@ do_mount()
 
     # Figure out a mount point to use
     LABEL=${ID_FS_LABEL}
+
+    # check for known labels in lower case
+    LOW_LABEL=$(echo ${LABEL} | tr '[:upper:]' '[:lower:]')
+
+    case "${LOW_LABEL}" in
+      data1*)
+        LABEL="data1"
+        ;;
+      data2*)
+        LABEL="data2"
+        ;;
+      data3*)
+        LABEL="data3"
+        ;;
+      data4*)
+        LABEL="data4"
+        ;;
+      data5*)
+        LABEL="data5"
+        ;;
+      data6*)
+        LABEL="data6"
+        ;;
+      data7*)
+        LABEL="data7"
+        ;;
+      data8*)
+        LABEL="data8"
+        ;;
+      frame)
+        LABEL="frame"
+        ;;
+      vehicle)
+        LABEL="vehicle"
+        ;;
+      *)
+        # default - use the original label
+        ;;
+    esac
+
     if grep -q " /media/${LABEL} " /etc/mtab; then
         # Already in use, make a unique one
         LABEL+="-${DEVBASE}"
     fi
-    DEV_LABEL="${LABEL}"
+
+    DEV_LABEL=${LABEL}
 
     # Use the device name in case the drive doesn't have label
     if [ -z ${DEV_LABEL} ]; then
@@ -65,7 +106,7 @@ do_mount()
 
     # File system type specific mount options
     if [[ ${ID_FS_TYPE} == "vfat" ]]; then
-        OPTS+=",users,gid=100,umask=000,shortname=mixed,utf8=1,flush"
+        OPTS+=",users,gid=100,umask=000,noatime,shortname=mixed,utf8=1,flush"
     fi
 
     if ! mount -o ${OPTS} ${DEVICE} ${MOUNT_POINT}; then
@@ -74,7 +115,7 @@ do_mount()
         exit 1
     else
         # Track the mounted drives
-        echo "${MOUNT_POINT}:${DEVBASE}" | cat >> "/var/log/usb-mount.track" 
+        echo "${MOUNT_POINT}:${DEVBASE}" | cat >> "/var/log/dcr-mount.track" 
     fi
 
     ${log} "Mounted ${DEVICE} at ${MOUNT_POINT}"
@@ -88,7 +129,7 @@ do_unmount()
         umount -l ${DEVICE}
 	${log} "Unmounted ${DEVICE} from ${MOUNT_POINT}"
         /bin/rmdir "${MOUNT_POINT}"
-        sed -i.bak "\@${MOUNT_POINT}@d" /var/log/usb-mount.track
+        sed -i.bak "\@${MOUNT_POINT}@d" /var/log/dcr-mount.track
     fi
 
 

@@ -1,0 +1,7 @@
+[Unit]
+Description=Mount DCR Drive on %i
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/usr/local/bin/dcr-mount.sh add %i
+ExecStop=/usr/local/bin/dcr-mount.sh remove %i

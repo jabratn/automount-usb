@@ -1,0 +1,2 @@
+KERNEL=="sd[a-z]*[0-9]", ENV{ID_BUS}=="ata|usb", ACTION=="add", RUN+="/bin/systemctl start dcr-mount@%k.service"
+KERNEL=="sd[a-z]*[0-9]", ENV{ID_BUS}=="ata|usb", ACTION=="remove", RUN+="/bin/systemctl stop dcr-mount@%k.service"

@@ -8,9 +8,9 @@ On inserting an USB drive, automounts the drive at /media/ as a
 directory named by device label; just the device name if label is
 empty: /media/usbtest, /media/sdd
 
-Tracks the list of mounted drives in /var/log/usb-mount.track.
+Tracks the list of mounted drives in /var/log/dcr-mount.track.
 
-Logs the actions in /var/log/messages with tag 'usb-mount.sh'
+Logs the actions in /var/log/syslog with tag 'dcr-mount.sh'
 
 Please do not expect it to perfectly handle all your needs.
 Be warned, minimally tested; okay for temporary plug-ins but certainly
